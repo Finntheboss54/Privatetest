@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="favicon.jpeg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.jpeg" />
+    <link rel="apple-touch-icon" href="favicon.jpeg" />
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finny's Private Site</title>
+    <meta name="title" content="Finny's private site" />
+    <meta name="description" content="Its Finnegans private site not made by me." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://gn-math.github.io/" />
+    <meta property="og:title" content="Finny's private site" />
+    <meta property="og:description" content="Play unbl*cked games like Crazy Cattle 3D and DriveMad on GN-Math. Fast, free, no downloads—perfect for school or home." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://gn-math.github.io/" />
+    <meta name="twitter:title" content="Finny's private site" />
+    <meta name="twitter:description" content="Play unbl*cked games like Crazy Cattle 3D and DriveMad on GN-Math. Fast, free, no downloads—perfect for school or home." />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0f0f2b" />
+
+    <style>
+      /* ─────────────────────────────────────────
+         LOGIN OVERLAY  (black + light red theme)
+         inherits font-family from style.css
+      ───────────────────────────────────────── */
+      #loginOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #loginOverlay.hidden {
+        display: none;
+      }
+
+      /* soft red glow blobs */
+      #loginOverlay::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse at 25% 55%, rgba(200, 30, 30, 0.1) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 25%, rgba(180, 20, 20, 0.07) 0%, transparent 50%);
+      }
+
+      /* faint red grid */
+      #loginOverlay::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(160, 0, 0, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(160, 0, 0, 0.045) 1px, transparent 1px);
+        background-size: 50px 50px;
+      }
+
+      .login-card {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 400px;
+        margin: 20px;
+        background: #0c0c0c;
+        border: 1px solid #1e0808;
+        border-radius: 14px;
+        padding: 38px 34px;
+        box-shadow:
+          0 0 0 1px rgba(180, 20, 20, 0.07),
+          0 28px 70px rgba(0, 0, 0, 0.75),
+          inset 0 1px 0 rgba(255, 50, 50, 0.05);
+        opacity: 0;
+        transform: translateY(22px);
+        animation: loginCardIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+      }
+
+      /* top red accent line */
+      .login-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 10%; right: 10%;
+        height: 1.5px;
+        border-radius: 99px;
+        background: linear-gradient(90deg, transparent, #c41e1e 40%, #e84040 60%, #c41e1e, transparent);
+      }
+
+      @keyframes loginCardIn {
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .login-site-name {
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 3.5px;
+        text-transform: uppercase;
+        color: #b01818;
+        margin-bottom: 8px;
+      }
+
+      .login-heading {
+        text-align: center;
+        font-size: 1.45rem;
+        font-weight: 900;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 3px;
+      }
+
+      .login-tagline {
+        text-align: center;
+        font-size: 0.78rem;
+        color: #444;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+      }
+
+      /* error banner */
+      .login-error {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        background: rgba(180, 20, 20, 0.12);
+        border: 1px solid rgba(180, 20, 20, 0.35);
+        border-radius: 8px;
+        padding: 9px 13px;
+        font-size: 0.85rem;
+        color: #e05555;
+        margin-bottom: 18px;
+      }
+
+      .login-error.show {
+        display: flex;
+        animation: errShake 0.38s ease;
+      }
+
+      @keyframes errShake {
+        0%,100%{ transform: translateX(0); }
+        20%,60%{ transform: translateX(-5px); }
+        40%,80%{ transform: translateX(5px); }
+      }
+
+      /* fields */
+      .login-field { margin-bottom: 17px; }
+
+      .login-field label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #4a4a4a;
+        margin-bottom: 7px;
+      }
+
+      .login-input-wrap { position: relative; }
+
+      .login-input-wrap .l-icon {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #333;
+        pointer-events: none;
+        transition: color 0.2s;
+      }
+
+      .login-input-wrap input:focus ~ .l-icon {
+        color: #cc2222;
+      }
+
+      .login-input-wrap input {
+        width: 100%;
+        background: #111;
+        border: 1px solid #1f1f1f;
+        border-radius: 8px;
+        padding: 11px 42px;
+        color: #ddd;
+        font-family: inherit;
+        font-size: 0.96rem;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      }
+
+      .login-input-wrap input::placeholder { color: #2e2e2e; }
+
+      .login-input-wrap input:focus {
+        border-color: #aa1a1a;
+        background: #120808;
+        box-shadow: 0 0 0 3px rgba(180, 20, 20, 0.14);
+      }
+
+      .pass-eye {
+        position: absolute;
+        right: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #333;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        transition: color 0.2s;
+      }
+
+      .pass-eye:hover { color: #cc2222; }
+
+      /* submit button */
+      .login-btn {
+        width: 100%;
+        padding: 12.5px;
+        background: #be1b1b;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+        box-shadow: 0 4px 18px rgba(160, 20, 20, 0.45);
+      }
+
+      .login-btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(255,255,255,0.09) 0%, transparent 100%);
+        pointer-events: none;
+      }
+
+      .login-btn:hover {
+        background: #d42020;
+        transform: translateY(-1px);
+        box-shadow: 0 7px 22px rgba(190, 27, 27, 0.55);
+      }
+
+      .login-btn:active { transform: translateY(0); }
+
+      .login-btn.loading { pointer-events: none; opacity: 0.6; }
+
+      .login-btn.success {
+        background: #166b34;
+        box-shadow: 0 4px 18px rgba(20, 140, 60, 0.4);
+        pointer-events: none;
+      }
+
+      .l-spinner {
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        border: 2px solid rgba(255,255,255,0.25);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.55s linear infinite;
+        vertical-align: middle;
+        margin-right: 7px;
+      }
+
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .login-divider {
+        height: 1px;
+        background: #161616;
+        margin: 24px 0;
+      }
+
+      .login-hint {
+        text-align: center;
+        font-size: 0.78rem;
+        color: #3e3e3e;
+        letter-spacing: 0.3px;
+      }
+
+      .login-hint span { color: #cc2222; font-weight: 700; }
+
+      /* ─────────────────────────────────────────
+         MAIN SITE  (hidden until auth passes)
+      ───────────────────────────────────────── */
+      #mainSite { display: none; }
+      #mainSite.visible { display: block; }
+
+      /* ── ADMIN PANEL ───────────────────────────────────────────── */
+      #adminBtn {
+        display: none;
+        background: #8b0000;
+        color: #fff;
+        border: 1px solid #cc0000;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: background 0.2s;
+        margin-left: 8px;
+      }
+      #adminBtn:hover { background: #aa0000; }
+      #adminBtn.visible { display: inline-block; }
+
+      #adminOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 88888;
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(4px);
+        align-items: flex-start;
+        justify-content: center;
+        overflow-y: auto;
+        padding: 40px 20px;
+      }
+      #adminOverlay.visible { display: flex; }
+
+      #adminPanel {
+        background: #0c0c0c;
+        border: 1px solid #2a0a0a;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 480px;
+        margin: auto;
+        overflow: visible;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.8);
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      #adminPanel::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 10%; right: 10%;
+        height: 1.5px;
+        background: linear-gradient(90deg, transparent, #cc0000 40%, #ff2020 60%, #cc0000, transparent);
+        border-radius: 99px;
+      }
+
+      .admin-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid #1a1a1a;
+      }
+
+      .admin-title {
+        font-size: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #cc2222;
+      }
+
+      .admin-close {
+        background: none;
+        border: none;
+        color: #555;
+        font-size: 1.4rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 2px 6px;
+        transition: color 0.2s;
+      }
+      .admin-close:hover { color: #fff; }
+
+      .admin-body { padding: 16px 24px 24px; }
+
+      .admin-subtitle {
+        font-size: 0.78rem;
+        color: #555;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+
+      .admin-account-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: #111;
+        border: 1px solid #1e1e1e;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+
+      .admin-account-info { display: flex; flex-direction: column; gap: 2px; }
+
+      .admin-account-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #ddd;
+        letter-spacing: 0.5px;
+      }
+
+      .admin-account-status {
+        font-size: 0.72rem;
+        letter-spacing: 0.5px;
+      }
+      .admin-account-status.locked { color: #44bb66; }
+      .admin-account-status.unlocked { color: #666; }
+
+      .admin-kick-btn {
+        background: rgba(180,20,20,0.15);
+        border: 1px solid rgba(180,20,20,0.4);
+        color: #e05050;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .admin-kick-btn:hover {
+        background: rgba(180,20,20,0.3);
+        border-color: rgba(180,20,20,0.7);
+      }
+      .admin-kick-btn:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+
+      .admin-kick-all {
+        width: 100%;
+        margin-top: 16px;
+        padding: 11px;
+        background: #8b0000;
+        border: 1px solid #cc0000;
+        border-radius: 8px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .admin-kick-all:hover { background: #aa0000; }
+
+      .admin-msg {
+        display: none;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #44bb66;
+        margin-top: 12px;
+        letter-spacing: 0.5px;
+      }
+      .admin-msg.visible { display: block; }
+
+      /* ── PANEL TABS ──────────────────────────────────────────────── */
+      .admin-tabs {
+        display: flex;
+        border-bottom: 1px solid #1a1a1a;
+      }
+      .admin-tab {
+        flex: 1;
+        padding: 13px 10px;
+        background: none;
+        border: none;
+        font-family: inherit;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #444;
+        cursor: pointer;
+        transition: color 0.2s, background 0.2s;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+      }
+      .admin-tab:hover { color: #999; background: #111; }
+      .admin-tab.active { color: #cc2222; border-bottom-color: #cc2222; }
+
+      .admin-tab-content { display: none; }
+      .admin-tab-content.active { display: block; }
+
+      /* ── DEVICE LOCK DELETER ─────────────────────────────────────── */
+      .dld-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: #111;
+        border: 1px solid #1e1e1e;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+      .dld-info { display: flex; flex-direction: column; gap: 2px; }
+      .dld-name { font-size: 0.9rem; font-weight: 700; color: #ddd; }
+      .dld-status { font-size: 0.72rem; letter-spacing: 0.5px; }
+      .dld-status.poisoned  { color: #e05050; }
+      .dld-status.clean     { color: #44bb66; }
+      .dld-status.none      { color: #444; }
+      .dld-delete-btn {
+        background: rgba(0,160,80,0.12);
+        border: 1px solid rgba(0,160,80,0.35);
+        color: #44bb66;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .dld-delete-btn:hover {
+        background: rgba(0,160,80,0.25);
+        border-color: rgba(0,160,80,0.6);
+      }
+      .dld-delete-btn:disabled { opacity: 0.3; cursor: default; }
+      .dld-refresh {
+        width: 100%;
+        margin-top: 14px;
+        padding: 10px;
+        background: #161616;
+        border: 1px solid #222;
+        border-radius: 8px;
+        color: #666;
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+      }
+      .dld-refresh:hover { background: #1e1e1e; color: #aaa; }
+
+      /* ── BAN / UNBAN ─────────────────────────────────────────────── */
+      .ban-btn {
+        background: rgba(180,20,20,0.12);
+        border: 1px solid rgba(180,20,20,0.35);
+        color: #e05050;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .ban-btn:hover { background: rgba(180,20,20,0.28); border-color: rgba(180,20,20,0.6); }
+      .ban-btn:disabled { opacity: 0.3; cursor: default; }
+
+      .unban-btn {
+        background: rgba(0,160,80,0.12);
+        border: 1px solid rgba(0,160,80,0.35);
+        color: #44bb66;
+        border-radius: 6px;
+        padding: 5px 12px;
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .unban-btn:hover { background: rgba(0,160,80,0.25); border-color: rgba(0,160,80,0.6); }
+      .unban-btn:disabled { opacity: 0.3; cursor: default; }
+
+      .ban-status-banned  { font-size: 0.72rem; color: #e05050; letter-spacing: 0.5px; }
+      .ban-status-active  { font-size: 0.72rem; color: #44bb66; letter-spacing: 0.5px; }
+      .ban-status-none    { font-size: 0.72rem; color: #444;    letter-spacing: 0.5px; }
+
+      /* ── CONFIRM KICK MODAL ──────────────────────────────────────── */
+      #confirmModal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99998;
+        background: rgba(0,0,0,0.85);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      #confirmModal.visible { display: flex; }
+
+      .confirm-box {
+        background: #0c0c0c;
+        border: 1px solid #2a0a0a;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 360px;
+        padding: 30px 28px;
+        position: relative;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+      }
+      .confirm-box::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 10%; right: 10%;
+        height: 1.5px;
+        border-radius: 99px;
+        background: linear-gradient(90deg, transparent, #cc0000 40%, #ff2020 60%, #cc0000, transparent);
+      }
+      .confirm-title {
+        font-size: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #cc2222;
+        margin-bottom: 6px;
+      }
+      .confirm-desc {
+        font-size: 0.82rem;
+        color: #555;
+        margin-bottom: 18px;
+        letter-spacing: 0.3px;
+        line-height: 1.5;
+      }
+      .confirm-desc span { color: #ddd; font-weight: 700; }
+      .confirm-code-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #4a4a4a;
+        margin-bottom: 7px;
+      }
+      .confirm-code-input {
+        width: 100%;
+        background: #111;
+        border: 1px solid #1f1f1f;
+        border-radius: 8px;
+        padding: 11px 14px;
+        color: #ddd;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        outline: none;
+        margin-bottom: 6px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .confirm-code-input:focus {
+        border-color: #aa1a1a;
+        box-shadow: 0 0 0 3px rgba(180,20,20,0.14);
+      }
+      .confirm-code-error {
+        font-size: 0.78rem;
+        color: #e05050;
+        margin-bottom: 14px;
+        min-height: 18px;
+      }
+      .confirm-btns { display: flex; gap: 10px; }
+      .confirm-cancel {
+        flex: 1;
+        padding: 10px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        color: #888;
+        font-family: inherit;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .confirm-cancel:hover { background: #222; color: #bbb; }
+      .confirm-proceed {
+        flex: 2;
+        padding: 10px;
+        background: #8b0000;
+        border: 1px solid #cc0000;
+        border-radius: 8px;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .confirm-proceed:hover { background: #aa0000; }
+    </style>
+  </head>
+
+  <body class="dark-mode">
+
+    <!-- ══════════════════════════════════════
+         LOGIN OVERLAY
+    ══════════════════════════════════════ -->
+    <div id="loginOverlay">
+      <div class="login-card">
+
+        <div class="login-site-name">Finny's Private Site</div>
+        <div class="login-heading">Members Only</div>
+        <div class="login-tagline">Restricted · Private Access</div>
+
+        <div class="login-error" id="loginError">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span id="loginErrorText">Invalid username or password.</span>
+        </div>
+
+        <div class="login-field">
+          <label for="loginUser">Username</label>
+          <div class="login-input-wrap">
+            <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username" />
+            <svg class="l-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="login-field">
+          <label for="loginPass">Password</label>
+          <div class="login-input-wrap">
+            <input type="password" id="loginPass" placeholder="Enter your password" autocomplete="current-password" />
+            <svg class="l-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <button class="pass-eye" onclick="toggleLoginPass()" type="button" title="Show / hide password">
+              <svg id="loginEyeIcon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="login-btn" id="loginSubmit" onclick="doLogin()" type="button">
+          Enter Site
+        </button>
+
+        <div class="login-divider"></div>
+        <div class="login-hint">No account? Give <span>Finny $2.50</span> to get one.</div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         MAIN SITE
+    ══════════════════════════════════════ -->
+    <div id="mainSite">
+      <header>
+        <div class="header-content">
+          <div class="logo">Finny's private site</div>
+          <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Search zones..." oninput="filterZones()" />
+            <select id="sortOptions" onchange="sortZones()">
+              <option value="name">Name</option>
+              <option value="id">ID (Date)</option>
+              <option value="popular">Popular</option>
+              <option value="trendingDay">Trending (Day)</option>
+              <option value="trendingWeek">Trending (Week)</option>
+              <option value="trendingMonth">Trending (Month)</option>
+            </select>
+            <select id="filterOptions" onchange="filterZones2()">
+              <option value="none">(SELECT TAG)</option>
+            </select>
+          </div>
+          <div class="control-buttons">
+            <button id="refresh" class="control-button" title="Refresh all the zones" onclick="listZones()">
+              <img src="refresh-icon.png" alt="refresh" />
+            </button>
+            <button id="settings" class="control-button" title="Settings!">
+              <img src="setting.png" alt="settings" />
+            </button>
+            <button id="adminBtn" onclick="openAdminPanel()" title="Admin Panel">⚙ Admin</button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <details id="featuredZonesWrapper" open>
+          <summary id="allZonesSummary" style="font-size: 1.2rem; font-weight: bold; cursor: pointer">
+            Featured Games
+          </summary>
+          <div id="featuredZones" class="zone-container"></div>
+        </details>
+        <br />
+        <hr />
+        <br />
+        <details id="allZonesWrapper" open>
+          <summary id="allSummary" style="font-size: 1.2rem; font-weight: bold; cursor: pointer">All Games</summary>
+          <div id="container">Loading...</div>
+        </details>
+      </main>
+
+      <div id="zoneViewer">
+        <div class="zone-header">
+          <div class="zone-title">
+            <h2 id="zoneName">Game</h2>
+            <button class="info-button" onclick="showZoneInfo()" title="Zone Information">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </button>
+            <span id="zoneId" style="display: none"></span>
+            <a id="zoneAuthor" href="#" target="_blank">by Author</a>
+          </div>
+          <div class="zone-controls">
+            <button onclick="fullscreenZone()">Fullscreen</button>
+            <button onclick="aboutBlank()">Open in New Tab</button>
+            <button onclick="downloadZone()">Download</button>
+            <button onclick="closeZone()">Close</button>
+          </div>
+        </div>
+        <iframe id="zoneFrame"></iframe>
+      </div>
+
+      <div id="popupOverlay">
+        <div class="popup">
+          <div class="popup-header">
+            <h3 id="popupTitle">Title</h3>
+            <button id="popupClose" onclick="closePopup()">×</button>
+          </div>
+          <div id="popupBody">Content will be here</div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="footer-links">
+          <a href="#" onclick="loadDMCA(); return false">DMCA</a>
+          <a href="#" onclick="showContact(); return false">Contact</a>
+          <a href="#" onclick="loadPrivacy(); return false">Privacy Policy</a>
+          <a href="javascript:saveData()">Export Data</a>
+          <a href="#" onclick="document.getElementById('importData').click(); return false">Import Data</a>
+          <input type="file" id="importData" style="display: none" onchange="loadData(event)" />
+        </div>
+        <div>
+          <script type="text/javascript">
+            aclib.runBanner({ zoneId: '10952070' });
+          </script>
+        </div>
+      </footer>
+      <!-- ADMIN PANEL OVERLAY (FMC only) -->
+      <div id="adminOverlay">
+        <div id="adminPanel">
+          <div class="admin-header">
+            <div class="admin-title">⚙ Admin Panel</div>
+            <button class="admin-close" onclick="closeAdminPanel()">×</button>
+          </div>
+
+          <!-- TABS -->
+          <div class="admin-tabs">
+            <button class="admin-tab active" id="tab-kick" onclick="switchTab('kick')">Force Logout</button>
+            <button class="admin-tab" id="tab-dld" onclick="switchTab('dld')">Device-Lock Deleter</button>
+            <button class="admin-tab" id="tab-ban" onclick="switchTab('ban')">Ban / Unban</button>
+          </div>
+
+          <!-- TAB 1: KICK -->
+          <div class="admin-tab-content active" id="tabcontent-kick">
+            <div class="admin-body">
+              <div class="admin-subtitle">Kick = force logout + poison lock. Enter your admin code to confirm.</div>
+              <div id="adminAccountList">Loading accounts...</div>
+              <button class="admin-kick-all" onclick="promptKickEveryone()">Kick Everyone Out</button>
+              <div class="admin-msg" id="adminMsg"></div>
+            </div>
+          </div>
+
+          <!-- TAB 2: DEVICE-LOCK DELETER -->
+          <div class="admin-tab-content" id="tabcontent-dld">
+            <div class="admin-body">
+              <div class="admin-subtitle">Delete a device lock so that account can register a new device on next login. Enter your admin code to confirm.</div>
+              <div id="dldAccountList">Loading...</div>
+              <button class="dld-refresh" onclick="refreshDldList()">↻ Refresh</button>
+              <div class="admin-msg" id="dldMsg"></div>
+            </div>
+          </div>
+
+          <!-- TAB 3: BAN / UNBAN -->
+          <div class="admin-tab-content" id="tabcontent-ban">
+            <div class="admin-body">
+              <div class="admin-subtitle">Banning locks the device ID so they can never log in. Admin code required.</div>
+              <div id="banAccountList">Loading...</div>
+              <button class="dld-refresh" onclick="refreshBanList()">↻ Refresh</button>
+              <div class="admin-msg" id="banMsg"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CONFIRM CODE MODAL -->
+      <div id="confirmModal">
+        <div class="confirm-box">
+          <div class="confirm-title">⚠ Confirm Action</div>
+          <div class="confirm-desc" id="confirmDesc">Are you sure?</div>
+          <div class="confirm-code-label">Enter code to confirm</div>
+          <input class="confirm-code-input" type="text" id="confirmCodeInput" placeholder="----" maxlength="30" />
+          <div class="confirm-code-error" id="confirmCodeError"></div>
+          <div class="confirm-btns">
+            <button class="confirm-cancel" onclick="closeConfirmModal()">Cancel</button>
+            <button class="confirm-proceed" onclick="submitConfirm()">Confirm Kick</button>
+          </div>
+        </div>
+      </div>
+
+    <!-- ══════════════════════════════════════
+         FIREBASE  (device token lock + admin)
+    ══════════════════════════════════════ -->
+
+    <!-- Load Firebase via CDN compat (no module needed) -->
+    <!-- Firebase compat SDKs (v9 compat — correct CDN URLs) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+      // ── CONFIG ────────────────────────────────────────────────────
+      var firebaseConfig = {
+        apiKey:            "AIzaSyBSRB_H3x9EcJGCBTI5JRkZSfJiUDW6O9E",
+        authDomain:        "finnyprivatesite.firebaseapp.com",
+        projectId:         "finnyprivatesite",
+        storageBucket:     "finnyprivatesite.firebasestorage.app",
+        messagingSenderId: "575839701505",
+        appId:             "1:575839701505:web:5946712828b951c4fc8e00"
+      };
+
+      // ── ACCOUNTS ─────────────────────────────────────────────────
+      var ACCOUNTS = [
+        { username: "FMC",          password: "finneganaccount",  admin: true },
+        { username: "OML",          password: "odieaccount"                   },
+        { username: "MRY",          password: "michaelaccount"                },
+        { username: "JMS",          password: "jeremieaccount"                },
+        { username: "FLE",          password: "finnainaccount"                },
+        { username: "JAL",          password: "josiahaccount"                 },
+        { username: "DEP",          password: "devinaccount"                  },
+        { username: "BR",           password: "bradyaccount"                  },
+        { username: "LRB",          password: "leoaccount"                    },
+        { username: "Carter",       password: "carteraccount"                 },
+        { username: "Placeholder1", password: "placeholderaccount1"           },
+        { username: "Placeholder2", password: "placeholderaccount2"           },
+        { username: "Placeholder3", password: "placeholderaccount3"           },
+        { username: "Placeholder4", password: "placeholderaccount4"           },
+        { username: "Placeholder5", password: "placeholderaccount5"           },
+      ];
+
+      var SESSION_KEY     = "finny_auth";
+      var LOCAL_TOKEN_KEY = "finny_device_token";
+
+      // Init Firebase AFTER ACCOUNTS is defined
+      firebase.initializeApp(firebaseConfig);
+      var db = firebase.firestore();
+
+      // ── HELPERS ───────────────────────────────────────────────────
+      function generateToken() {
+        var arr = new Uint8Array(32);
+        crypto.getRandomValues(arr);
+        return Array.from(arr).map(function(b) { return b.toString(16).padStart(2, "0"); }).join("");
+      }
+
+      function findAccount(username, password) {
+        for (var i = 0; i < ACCOUNTS.length; i++) {
+          if (ACCOUNTS[i].username.toLowerCase() === username.toLowerCase()
+              && ACCOUNTS[i].password === password) {
+            return ACCOUNTS[i];
+          }
+        }
+        return null;
+      }
+
+      function findAccountByUsername(username) {
+        for (var i = 0; i < ACCOUNTS.length; i++) {
+          if (ACCOUNTS[i].username === username) return ACCOUNTS[i];
+        }
+        return null;
+      }
+
+      function revealSite(matchedAccount) {
+        document.getElementById("loginOverlay").classList.add("hidden");
+        document.getElementById("mainSite").classList.add("visible");
+        if (matchedAccount && matchedAccount.admin) {
+          document.getElementById("adminBtn").classList.add("visible");
+        }
+        startKickPoller();
+        window.addEventListener("beforeunload", function(e) {
+          e.preventDefault();
+          e.returnValue = "";
+          return "Are you sure you want to leave? Any unsaved changes will be lost.";
+        });
+      }
+
+      function showLoginError(msg) {
+        var errBox = document.getElementById("loginError");
+        document.getElementById("loginErrorText").textContent = msg;
+        errBox.classList.remove("show");
+        void errBox.offsetWidth;
+        errBox.classList.add("show");
+      }
+
+      function resetBtn() {
+        var btn = document.getElementById("loginSubmit");
+        btn.classList.remove("loading");
+        btn.innerHTML = "Enter Site";
+      }
+
+      // Skip login if already authed this session
+      if (sessionStorage.getItem(SESSION_KEY) === "ok") {
+        var _savedUser = sessionStorage.getItem("finny_current_user");
+        revealSite(findAccountByUsername(_savedUser));
+      }
+
+      // ── LOGIN ─────────────────────────────────────────────────────
+      function doLogin() {
+        var username = document.getElementById("loginUser").value.trim();
+        var password = document.getElementById("loginPass").value;
+        var btn      = document.getElementById("loginSubmit");
+
+        if (!username || !password) {
+          showLoginError("Please fill in both fields.");
+          return;
+        }
+
+        btn.classList.add("loading");
+        btn.innerHTML = '<span class="l-spinner"></span>Checking...';
+        document.getElementById("loginError").classList.remove("show");
+
+        var match = findAccount(username, password);
+
+        if (!match) {
+          resetBtn();
+          showLoginError("Wrong username or password.");
+          return;
+        }
+
+        btn.innerHTML = '<span class="l-spinner"></span>Verifying device...';
+
+        var canonUser   = match.username.toLowerCase();
+        var now         = new Date().toISOString();
+        var deviceToken = localStorage.getItem(LOCAL_TOKEN_KEY + "_" + canonUser);
+        var matchRef    = match;
+
+        // ── Check if this device is globally banned ───────────────
+        // We scan all banned device tokens stored in device_locks
+        // and block the login if this device's token matches any of them.
+        var allTokenKeys = ACCOUNTS
+          .filter(function(a) { return !a.admin; })
+          .map(function(a) { return localStorage.getItem(LOCAL_TOKEN_KEY + "_" + a.username.toLowerCase()); })
+          .filter(Boolean);
+
+        db.collection("device_locks").get().then(function(allSnap) {
+          var isDeviceBanned = false;
+          allSnap.forEach(function(d) {
+            var data = d.data();
+            if (data.banned === true && data.lockedToken && allTokenKeys.indexOf(data.lockedToken) !== -1) {
+              isDeviceBanned = true;
+            }
+          });
+
+          if (isDeviceBanned) {
+            resetBtn();
+            showLoginError("This device has been banned.");
+            return Promise.reject("device_banned");
+          }
+
+          return db.collection("device_locks").doc(canonUser).get();
+        })
+          .then(function(lockSnap) {
+            if (!lockSnap.exists) {
+              // First login — register this device
+              deviceToken = generateToken();
+              localStorage.setItem(LOCAL_TOKEN_KEY + "_" + canonUser, deviceToken);
+              return db.collection("device_locks").doc(canonUser).set({
+                lockedToken: deviceToken, registeredAt: now
+              }).then(function() {
+                return { allowed: true, reason: "first_login", deviceToken: deviceToken };
+              });
+            } else {
+              // Check if account is banned first
+              if (lockSnap.data().banned === true) {
+                return Promise.resolve({ allowed: false, reason: "banned", deviceToken: deviceToken });
+              }
+              var lockedToken = lockSnap.data().lockedToken;
+              var allowed, reason;
+              if (!deviceToken)                   { allowed = false; reason = "no_token";     }
+              else if (deviceToken === lockedToken){ allowed = true;  reason = "token_match";  }
+              else                                 { allowed = false; reason = "token_mismatch";}
+              return Promise.resolve({ allowed: allowed, reason: reason, deviceToken: deviceToken });
+            }
+          })
+          .then(function(result) {
+            // Log the attempt
+            var logEntry = {
+              username: matchRef.username, time: now,
+              allowed: result.allowed, reason: result.reason
+            };
+            return db.collection("device_log").doc(canonUser).get()
+              .then(function(logSnap) {
+                if (logSnap.exists) {
+                  return db.collection("device_log").doc(canonUser).update({
+                    entries: firebase.firestore.FieldValue.arrayUnion(logEntry)
+                  });
+                } else {
+                  return db.collection("device_log").doc(canonUser).set({ entries: [logEntry] });
+                }
+              })
+              .then(function() { return result; });
+          })
+          .then(function(result) {
+            if (result.allowed) {
+              sessionStorage.setItem(SESSION_KEY, "ok");
+              sessionStorage.setItem("finny_current_user", matchRef.username);
+              btn.classList.remove("loading");
+              btn.classList.add("success");
+              btn.innerHTML = "✓ Access Granted";
+              setTimeout(function() { revealSite(matchRef); }, 480);
+            } else {
+              resetBtn();
+              if (result.reason === "banned") {
+                showLoginError("This account has been banned.");
+              } else {
+                showLoginError("Access denied: this account is locked to a different device.");
+              }
+            }
+          })
+          .catch(function(err) {
+            if (err === "device_banned") return; // already handled above
+            console.error("Firebase error:", err);
+            resetBtn();
+            showLoginError("Connection error — please try again.");
+          });
+      }
+
+      function toggleLoginPass() {
+        var inp  = document.getElementById("loginPass");
+        var icon = document.getElementById("loginEyeIcon");
+        if (inp.type === "password") {
+          inp.type = "text";
+          icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+        } else {
+          inp.type = "password";
+          icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+        }
+      }
+
+      document.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" && !document.getElementById("loginOverlay").classList.contains("hidden")) {
+          doLogin();
+        }
+      });
+
+      // ── ADMIN PANEL ───────────────────────────────────────────────
+      function openAdminPanel() {
+        document.getElementById("adminOverlay").classList.add("visible");
+        document.getElementById("adminMsg").classList.remove("visible");
+        refreshAdminList();
+      }
+
+      function closeAdminPanel() {
+        document.getElementById("adminOverlay").classList.remove("visible");
+      }
+
+      function refreshAdminList() {
+        var listEl = document.getElementById("adminAccountList");
+        listEl.innerHTML = '<div style="color:#555;font-size:0.85rem;padding:8px 0">Loading...</div>';
+
+        db.collection("device_locks").get()
+          .then(function(snap) {
+            var lockedUsers = {};
+            snap.forEach(function(d) { lockedUsers[d.id] = true; });
+
+            var nonAdmin = ACCOUNTS.filter(function(a) { return !a.admin; });
+            listEl.innerHTML = nonAdmin.map(function(a) {
+              var canon = a.username.toLowerCase();
+              var isIn  = !!lockedUsers[canon];
+              return '<div class="admin-account-row" id="row-' + canon + '">' +
+                '<div class="admin-account-info">' +
+                  '<div class="admin-account-name">' + a.username + '</div>' +
+                  '<div class="admin-account-status ' + (isIn ? 'locked' : 'unlocked') + '" id="status-' + canon + '">' +
+                    (isIn ? '&#9679; Device registered' : '&#9675; Never logged in') +
+                  '</div>' +
+                '</div>' +
+                '<button class="admin-kick-btn" id="kick-' + canon + '" ' +
+                  'onclick="promptKickUser(\'' + canon + '\',\'' + a.username + '\')" ' +
+                  (isIn ? '' : 'disabled') + '>Kick</button>' +
+              '</div>';
+            }).join("");
+          })
+          .catch(function() {
+            listEl.innerHTML = '<div style="color:#e05050;font-size:0.85rem">Could not load accounts.</div>';
+          });
+      }
+
+      // ── KICK CONFIRM CODE ─────────────────────────────────────────
+      var KICK_CODE = "Generalpug1814!";
+      var pendingKick = null;
+
+      function promptDeleteLock(canonUser, displayName) {
+        pendingKick = { type: "delete", canonUser: canonUser, displayName: displayName };
+        document.getElementById("confirmDesc").innerHTML =
+          'This will delete <span>' + displayName + '</span>\'s device lock so they can register a new device on next login.';
+        document.getElementById("confirmCodeInput").value = "";
+        document.getElementById("confirmCodeError").textContent = "";
+        document.getElementById("confirmModal").classList.add("visible");
+        setTimeout(function(){ document.getElementById("confirmCodeInput").focus(); }, 50);
+      }
+
+      function promptKickUser(canonUser, displayName) {
+        pendingKick = { type: "one", canonUser: canonUser, displayName: displayName };
+        document.getElementById("confirmDesc").innerHTML =
+          'This will force <span>' + displayName + '</span> back to login and lock their account with a fake device ID — no one can log in until you reset it in Firebase.';
+        document.getElementById("confirmCodeInput").value = "";
+        document.getElementById("confirmCodeError").textContent = "";
+        document.getElementById("confirmModal").classList.add("visible");
+        setTimeout(function(){ document.getElementById("confirmCodeInput").focus(); }, 50);
+      }
+
+      function promptKickEveryone() {
+        pendingKick = { type: "everyone" };
+        document.getElementById("confirmDesc").innerHTML =
+          'This will force <span>everyone</span> back to login and lock all accounts with fake device IDs.';
+        document.getElementById("confirmCodeInput").value = "";
+        document.getElementById("confirmCodeError").textContent = "";
+        document.getElementById("confirmModal").classList.add("visible");
+        setTimeout(function(){ document.getElementById("confirmCodeInput").focus(); }, 50);
+      }
+
+      function closeConfirmModal() {
+        document.getElementById("confirmModal").classList.remove("visible");
+        pendingKick = null;
+      }
+
+      function submitConfirm() {
+        var code = document.getElementById("confirmCodeInput").value.trim();
+        if (code !== KICK_CODE) {
+          document.getElementById("confirmCodeError").textContent = "Wrong code. Try again.";
+          document.getElementById("confirmCodeInput").value = "";
+          document.getElementById("confirmCodeInput").focus();
+          return;
+        }
+        document.getElementById("confirmModal").classList.remove("visible");
+        if (!pendingKick) return;
+        if (pendingKick.type === "one") {
+          kickUser(pendingKick.canonUser, pendingKick.displayName);
+        } else if (pendingKick.type === "everyone") {
+          kickEveryone();
+        } else if (pendingKick.type === "delete") {
+          deleteLock(pendingKick.canonUser, pendingKick.displayName);
+        } else if (pendingKick.type === "ban") {
+          banUser(pendingKick.canonUser, pendingKick.displayName);
+        } else if (pendingKick.type === "unban") {
+          unbanUser(pendingKick.canonUser, pendingKick.displayName);
+        }
+        pendingKick = null;
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("confirmCodeInput").addEventListener("keydown", function(e) {
+          if (e.key === "Enter") submitConfirm();
+        });
+      });
+
+      // ── POISON TOKEN ──────────────────────────────────────────────
+      function poisonToken() {
+        var arr = new Uint8Array(32);
+        crypto.getRandomValues(arr);
+        return Array.from(arr).map(function(b){ return b.toString(16).padStart(2,"0"); }).join("");
+      }
+
+      function kickUser(canonUser, displayName) {
+        var btn      = document.getElementById("kick-" + canonUser);
+        var statusEl = document.getElementById("status-" + canonUser);
+        if (btn) { btn.disabled = true; btn.textContent = "Kicking..."; }
+        var fake = poisonToken();
+        db.collection("device_locks").doc(canonUser).set({
+          lockedToken: fake,
+          poisoned:    true,
+          kickedAt:    new Date().toISOString()
+        }).then(function() {
+          if (statusEl) { statusEl.textContent = "✕ Kicked & locked"; statusEl.className = "admin-account-status unlocked"; }
+          if (btn)      { btn.disabled = false; btn.textContent = "Kick"; }
+          showAdminMsg(displayName + " has been kicked and locked.");
+        }).catch(function() {
+          if (btn) { btn.disabled = false; btn.textContent = "Kick"; }
+          showAdminMsg("Error — could not kick " + displayName);
+        });
+      }
+
+      function kickEveryone() {
+        var btn = document.querySelector(".admin-kick-all");
+        btn.textContent = "Kicking everyone...";
+        btn.disabled    = true;
+        var nonAdmin = ACCOUNTS.filter(function(a) { return !a.admin; });
+        var promises = nonAdmin.map(function(a) {
+          return db.collection("device_locks").doc(a.username.toLowerCase()).set({
+            lockedToken: poisonToken(), poisoned: true, kickedAt: new Date().toISOString()
+          }).catch(function(){});
+        });
+        Promise.all(promises).then(function() {
+          refreshAdminList();
+          btn.textContent = "Kick Everyone Out";
+          btn.disabled    = false;
+          showAdminMsg("Everyone has been kicked and all locks poisoned.");
+        });
+      }
+
+      // ── FORCE LOGOUT POLLING ──────────────────────────────────────
+      // Every 8 seconds check if the logged-in user has been kicked.
+      // If their saved token no longer matches Firebase, reload to login.
+      function startKickPoller() {
+        var currentUserName = sessionStorage.getItem("finny_current_user");
+        if (!currentUserName) return;
+        var canon = currentUserName.toLowerCase();
+        var loginTime = new Date().toISOString();
+
+        setInterval(function() {
+          var savedToken = localStorage.getItem(LOCAL_TOKEN_KEY + "_" + canon);
+          db.collection("device_locks").doc(canon).get().then(function(snap) {
+            if (!snap.exists) return;
+            var data = snap.data();
+
+            // Kicked via poison token
+            if (data.poisoned && data.lockedToken !== savedToken) {
+              sessionStorage.removeItem(SESSION_KEY);
+              sessionStorage.removeItem("finny_current_user");
+              window.location.reload();
+              return;
+            }
+
+            // Banned or force-logout triggered after this session started
+            if (data.banned === true || (data.forceLogout && data.forceLogout > loginTime)) {
+              sessionStorage.removeItem(SESSION_KEY);
+              sessionStorage.removeItem("finny_current_user");
+              window.location.reload();
+            }
+          }).catch(function(){});
+        }, 8000);
+      }
+
+      // ── TAB SWITCHING ─────────────────────────────────────────────
+      function switchTab(tab) {
+        document.querySelectorAll(".admin-tab").forEach(function(b){ b.classList.remove("active"); });
+        document.querySelectorAll(".admin-tab-content").forEach(function(c){ c.classList.remove("active"); });
+        document.getElementById("tab-" + tab).classList.add("active");
+        document.getElementById("tabcontent-" + tab).classList.add("active");
+        if (tab === "dld") refreshDldList();
+        if (tab === "ban") refreshBanList();
+      }
+
+      // ── DEVICE-LOCK DELETER ───────────────────────────────────────
+      function refreshDldList() {
+        var listEl = document.getElementById("dldAccountList");
+        listEl.innerHTML = '<div style="color:#555;font-size:0.85rem;padding:8px 0">Loading...</div>';
+
+        db.collection("device_locks").get().then(function(snap) {
+          var locks = {};
+          snap.forEach(function(d) { locks[d.id] = d.data(); });
+
+          var nonAdmin = ACCOUNTS.filter(function(a) { return !a.admin; });
+          if (nonAdmin.length === 0) {
+            listEl.innerHTML = '<div style="color:#555;font-size:0.85rem">No accounts.</div>';
+            return;
+          }
+
+          listEl.innerHTML = nonAdmin.map(function(a) {
+            var canon = a.username.toLowerCase();
+            var lock  = locks[canon];
+            var statusClass, statusText;
+            if (!lock) {
+              statusClass = "none";     statusText = "○ No lock on file";
+            } else if (lock.poisoned) {
+              statusClass = "poisoned"; statusText = "✕ Poisoned — no one can log in";
+            } else {
+              statusClass = "clean";    statusText = "● Active device lock";
+            }
+            var hasDoc = !!lock;
+            return '<div class="dld-row" id="dld-row-' + canon + '">' +
+              '<div class="dld-info">' +
+                '<div class="dld-name">' + a.username + '</div>' +
+                '<div class="dld-status ' + statusClass + '" id="dld-status-' + canon + '">' + statusText + '</div>' +
+              '</div>' +
+              '<button class="dld-delete-btn" id="dld-btn-' + canon + '" ' +
+                'onclick="promptDeleteLock(\'' + canon + '\',\'' + a.username + '\')" ' +
+                (hasDoc ? '' : 'disabled') + '>Delete Lock</button>' +
+            '</div>';
+          }).join("");
+        }).catch(function() {
+          listEl.innerHTML = '<div style="color:#e05050;font-size:0.85rem">Could not load locks.</div>';
+        });
+      }
+
+      function deleteLock(canonUser, displayName) {
+        var btn      = document.getElementById("dld-btn-" + canonUser);
+        var statusEl = document.getElementById("dld-status-" + canonUser);
+        btn.disabled    = true;
+        btn.textContent = "Deleting...";
+        db.collection("device_locks").doc(canonUser).delete().then(function() {
+          statusEl.textContent = "○ Lock deleted — can register fresh";
+          statusEl.className   = "dld-status none";
+          btn.textContent      = "Delete Lock";
+          showDldMsg(displayName + "'s device lock has been deleted.");
+        }).catch(function() {
+          btn.disabled    = false;
+          btn.textContent = "Delete Lock";
+          showDldMsg("Error — could not delete lock for " + displayName);
+        });
+      }
+
+      function showDldMsg(msg) {
+        var el = document.getElementById("dldMsg");
+        el.textContent = msg;
+        el.classList.add("visible");
+        setTimeout(function() { el.classList.remove("visible"); }, 3000);
+      }
+
+      function showAdminMsg(msg) {
+        var el = document.getElementById("adminMsg");
+        el.textContent = msg;
+        el.classList.add("visible");
+        setTimeout(function() { el.classList.remove("visible"); }, 3000);
+      }
+
+      function showBanMsg(msg) {
+        var el = document.getElementById("banMsg");
+        el.textContent = msg;
+        el.classList.add("visible");
+        setTimeout(function() { el.classList.remove("visible"); }, 3000);
+      }
+
+      // ── BAN / UNBAN ───────────────────────────────────────────────
+
+      function refreshBanList() {
+        var listEl = document.getElementById("banAccountList");
+        listEl.innerHTML = '<div style="color:#555;font-size:0.85rem;padding:8px 0">Loading...</div>';
+
+        db.collection("device_locks").get().then(function(snap) {
+          var locks = {};
+          snap.forEach(function(d) { locks[d.id] = d.data(); });
+
+          var nonAdmin = ACCOUNTS.filter(function(a) { return !a.admin; });
+          listEl.innerHTML = nonAdmin.map(function(a) {
+            var canon = a.username.toLowerCase();
+            var lock  = locks[canon];
+            var isBanned  = lock && lock.banned;
+            var hasLock   = !!lock;
+
+            var statusClass, statusText;
+            if (isBanned)    { statusClass = "ban-status-banned"; statusText = "✕ Banned"; }
+            else if (hasLock){ statusClass = "ban-status-active"; statusText = "● Active";  }
+            else             { statusClass = "ban-status-none";   statusText = "○ No lock"; }
+
+            var banBtn   = !isBanned
+              ? '<button class="ban-btn" id="ban-btn-' + canon + '" onclick="promptBanUser(\'' + canon + '\',\'' + a.username + '\')"' + (!hasLock ? ' disabled' : '') + '>Ban</button>'
+              : '';
+            var unbanBtn = isBanned
+              ? '<button class="unban-btn" id="unban-btn-' + canon + '" onclick="promptUnbanUser(\'' + canon + '\',\'' + a.username + '\')">Unban</button>'
+              : '';
+
+            return '<div class="dld-row" id="ban-row-' + canon + '">' +
+              '<div class="dld-info">' +
+                '<div class="dld-name">' + a.username + '</div>' +
+                '<div class="' + statusClass + '" id="ban-status-' + canon + '">' + statusText + '</div>' +
+              '</div>' +
+              '<div style="display:flex;gap:6px">' + banBtn + unbanBtn + '</div>' +
+            '</div>';
+          }).join("");
+        }).catch(function() {
+          listEl.innerHTML = '<div style="color:#e05050;font-size:0.85rem">Could not load accounts.</div>';
+        });
+      }
+
+      function promptBanUser(canonUser, displayName) {
+        pendingKick = { type: "ban", canonUser: canonUser, displayName: displayName };
+        document.getElementById("confirmDesc").innerHTML =
+          'This will <span>ban ' + displayName + '</span> — their device ID will be flagged and they will be blocked from logging in.';
+        document.getElementById("confirmCodeInput").value = "";
+        document.getElementById("confirmCodeError").textContent = "";
+        document.getElementById("confirmModal").classList.add("visible");
+        setTimeout(function(){ document.getElementById("confirmCodeInput").focus(); }, 50);
+      }
+
+      function promptUnbanUser(canonUser, displayName) {
+        pendingKick = { type: "unban", canonUser: canonUser, displayName: displayName };
+        document.getElementById("confirmDesc").innerHTML =
+          'This will <span>unban ' + displayName + '</span> — they will be able to log in from their registered device again.';
+        document.getElementById("confirmCodeInput").value = "";
+        document.getElementById("confirmCodeError").textContent = "";
+        document.getElementById("confirmModal").classList.add("visible");
+        setTimeout(function(){ document.getElementById("confirmCodeInput").focus(); }, 50);
+      }
+
+      function banUser(canonUser, displayName) {
+        db.collection("device_locks").doc(canonUser).set(
+          { banned: true, bannedAt: new Date().toISOString(), forceLogout: new Date().toISOString() },
+          { merge: true }
+        ).then(function() {
+          refreshBanList();
+          showBanMsg(displayName + " has been banned and kicked out.");
+        }).catch(function(err) {
+          console.error("Ban error:", err);
+          showBanMsg("Error — could not ban " + displayName);
+        });
+      }
+
+      function unbanUser(canonUser, displayName) {
+        db.collection("device_locks").doc(canonUser).set(
+          { banned: false },
+          { merge: true }
+        ).then(function() {
+          refreshBanList();
+          showBanMsg(displayName + " has been unbanned.");
+        }).catch(function(err) {
+          console.error("Unban error:", err);
+          showBanMsg("Error — could not unban " + displayName);
+        });
+      }
+    </script>
+
+    <script src="script.js"></script>
+
+    <script>
+      try {
+        var search  = new URLSearchParams(window.location.search);
+        var privacy = search.get('privacy');
+        if (privacy) { loadPrivacy(); }
+      } catch (e) {}
+    </script>
+
+    <script>
+      navigator.serviceWorker.register(location.protocol + '//' + location.hostname + '/sw.js');
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WX5VS54ZDW"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-WX5VS54ZDW');
+    </script>
+
+  </body>
+</html>
